@@ -10,6 +10,7 @@ on:
 jobs:
   build:
     name: Next.js app docker build and deployment
+    runs-on: ubuntu-latest
 
 # Initialization
     steps:
