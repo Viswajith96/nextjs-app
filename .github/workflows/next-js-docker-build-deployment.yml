@@ -1,0 +1,57 @@
+name: next-js-docker-build-deployment 
+
+on:
+  push:
+    branches:
+      - 'main'
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  build:
+    name: Next.js app docker build and deployment
+
+# Initialization
+    steps:
+      - name: Setup AWSCLI
+        uses: unfor19/install-aws-cli-action@v1.0.3
+        with:
+          arch: amd64   
+        
+      - name: SCM Checkout 
+        uses: actions/checkout@v3
+      
+      - name: Configure AWS Credentials for ECR
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      
+      - name: Amazon ECR Authentication
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+# Build docker image
+      - name: Get Image Tag
+        run: |
+          echo "BUILD_NUMBER=$(echo ${{ github.run_number }})" >> $GITHUB_ENV
+
+      - name: Build Backend image
+        env:
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+        run: |
+          docker build -t $ECR_REPOSITORY:$BUILD_NUMBER \
+            --build-arg BUILD_NUMBER="$BUILD_NUMBER" \
+            -f Dockerfile .
+          docker image push $ECR_REPOSITORY:$BUILD_NUMBER   
+
+# Run docker image vulnerability scan
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        env:
+          TRIVY_OFFLINE_SCAN: true
+        with:
+          image-ref: ${{ secrets.ECR_REPOSITORY }}:${{ env.BUILD_NUMBER }}
+          format: 'table'
+          severity: 'CRITICAL,HIGH'
