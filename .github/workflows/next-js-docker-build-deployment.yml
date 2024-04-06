@@ -57,14 +57,6 @@ jobs:
           format: 'table'
           severity: 'CRITICAL,HIGH'
 
-      - name: executing remote ssh commands using ssh key
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.VM_HOST }}
-          username: ${{ secrets.VM_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: whoami    
-      
 # Deploy the NextJs docker image in EC2.
       - name: Deploy docker image to EC2 instance
         uses: appleboy/ssh-action@v1.0.3
@@ -74,4 +66,8 @@ jobs:
           host: ${{ secrets.VM_HOST }}
           username: ${{ secrets.VM_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: docker pull ${{ secrets.ECR_REPOSITORY }}:${{ env.BUILD_NUMBER }}
+          script: |
+            docker login 
+            docker stop my-container || true
+            docker rm my-container || true
+            docker pull ${{ secrets.ECR_REPOSITORY }}:${{ env.BUILD_NUMBER }}
