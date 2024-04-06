@@ -68,6 +68,4 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             docker pull $ECR_REPOSITORY:$BUILD_NUMBER
-            docker stop nextjs-app
-            docker rm -f nextjs-app
             docker run -itd --name nextjs-app -p 3000:3000 $ECR_REPOSITORY:$BUILD_NUMBER
