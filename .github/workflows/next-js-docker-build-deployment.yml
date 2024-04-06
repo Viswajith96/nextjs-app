@@ -67,13 +67,11 @@ jobs:
       
 # Deploy the NextJs docker image in EC2.
       - name: Deploy docker image to EC2 instance
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v1.0.3
         env:
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
         with:
           host: ${{ secrets.VM_HOST }}
           username: ${{ secrets.VM_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            docker pull $ECR_REPOSITORY:$BUILD_NUMBER
-            docker run -itd --name nextjs-app -p 3000:3000 $ECR_REPOSITORY:$BUILD_NUMBER
+          script: cat /etc/os-release
