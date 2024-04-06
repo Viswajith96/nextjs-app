@@ -67,7 +67,6 @@ jobs:
           username: ${{ secrets.VM_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            docker login 
-            docker stop my-container || true
-            docker rm my-container || true
+            docker stop nextjs-app || true
+            docker rm -f nextjs-app || true
             docker pull ${{ secrets.ECR_REPOSITORY }}:${{ env.BUILD_NUMBER }}
