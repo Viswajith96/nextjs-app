@@ -56,16 +56,27 @@ jobs:
           image-ref: ${{ secrets.ECR_REPOSITORY }}:${{ env.BUILD_NUMBER }}
           format: 'table'
           severity: 'CRITICAL,HIGH'
-
-# Deploy the NextJs docker image in EC2.
-      - name: Deploy docker image to EC2 instance
-        uses: appleboy/ssh-action@master
+      
+      - name: Build & Deploy
         env:
-          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-        with:
-          host: ${{ secrets.VM_HOST }}
-          username: ${{ secrets.VM_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            docker pull $ECR_REPOSITORY:$BUILD_NUMBER
-            docker run -itd --name nextjs-app -p 3000:3000 $ECR_REPOSITORY:$BUILD_NUMBER
+            PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+            HOSTNAME: ${{secrets.SSH_HOST}}
+            USER_NAME: ${{secrets.USER_NAME}}
+      
+        run: |
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
+          docker pull $ECR_REPOSITORY:$BUILD_NUMBER
+
+# # Deploy the NextJs docker image in EC2.
+#       - name: Deploy docker image to EC2 instance
+#         uses: appleboy/ssh-action@master
+#         env:
+#           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+#         with:
+#           host: ${{ secrets.VM_HOST }}
+#           username: ${{ secrets.VM_USERNAME }}
+#           key: ${{ secrets.SSH_PRIVATE_KEY }}
+#           script: |
+#             docker pull $ECR_REPOSITORY:$BUILD_NUMBER
+#             docker run -itd --name nextjs-app -p 3000:3000 $ECR_REPOSITORY:$BUILD_NUMBER
