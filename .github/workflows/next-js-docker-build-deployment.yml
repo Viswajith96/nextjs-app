@@ -38,7 +38,7 @@ jobs:
         run: |
           echo "BUILD_NUMBER=$(echo ${{ github.run_number }})" >> $GITHUB_ENV
 
-      - name: Build Backend image
+      - name: Build Docker image
         env:
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
         run: |
@@ -56,3 +56,17 @@ jobs:
           image-ref: ${{ secrets.ECR_REPOSITORY }}:${{ env.BUILD_NUMBER }}
           format: 'table'
           severity: 'CRITICAL,HIGH'
+
+# Deploy the NextJs docker image in EC2.
+      - name: Deploy docker image to EC2 instance
+        uses: appleboy/ssh-action@master
+        env:
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            docker stop nextjs-app || true
+            docker rm -f nextjs-app || true
+            docker run -itd --name nextjs-app -p 3000:3000 $ECR_REPOSITORY:$BUILD_NUMBER
