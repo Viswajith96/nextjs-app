@@ -74,4 +74,4 @@ jobs:
           host: ${{ secrets.VM_HOST }}
           username: ${{ secrets.VM_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: cat /etc/os-release
+          script: docker pull $ECR_REPOSITORY:$BUILD_NUMBER
