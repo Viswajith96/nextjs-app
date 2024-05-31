@@ -65,18 +65,3 @@ jobs:
         uses: github/codeql-action/upload-sarif@v1
         with:
           sarif_file: 'trivy-results.sarif'
-
-# Deploy the NextJs docker image in EC2.
-      - name: Deploy docker image to EC2 instance
-        uses: appleboy/ssh-action@v1.0.3
-        env:
-          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-        with:
-          host: ${{ secrets.VM_HOST }}
-          username: ${{ secrets.VM_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            docker stop nextjs-app || true
-            docker rm -f nextjs-app || true
-            docker pull ${{ secrets.ECR_REPOSITORY }}:${{ env.BUILD_NUMBER }}
-            docker run -itd --name nextjs-app -p 3000:3000 ${{ secrets.ECR_REPOSITORY }}:${{ env.BUILD_NUMBER }}
