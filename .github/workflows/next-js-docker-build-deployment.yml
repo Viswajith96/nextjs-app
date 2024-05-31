@@ -55,8 +55,16 @@ jobs:
           TRIVY_OFFLINE_SCAN: true
         with:
           image-ref: ${{ secrets.ECR_REPOSITORY }}:${{ env.BUILD_NUMBER }}
-          format: 'table'
+          format: 'template'
+          template: '@/contrib/sarif.tpl'
           severity: 'CRITICAL,HIGH'
+          output: 'trivy-results.sarif'
+
+# Upload trivy scan results
+      - name: Upload Trivy Scan Results
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: 'trivy-results.sarif'
 
 # Deploy the NextJs docker image in EC2.
       - name: Deploy docker image to EC2 instance
