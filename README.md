@@ -11,4 +11,4 @@ Includes.
     - Push the docker image to ECR
     - Scan the vulnerabilities using [Trivy](https://aquasecurity.github.io/trivy/v0.50/)
     - Deploy the docker image in EC2 instance
-- Terraform code to provision the infra resources.
+- Terraform code to provision the infra resources..
