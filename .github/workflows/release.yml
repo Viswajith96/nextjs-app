@@ -23,6 +23,6 @@ jobs:
       - name: Generate release notes
         uses: softprops/action-gh-release@v1
         with:
-          token: ${DEPLOY_GITHUB_PAT}
+          token: ${{ secrets.DEPLOY_GITHUB_PAT }}
           tag_name: v${{ steps.fetch-version.outputs.version }}
           generate_release_notes: true
