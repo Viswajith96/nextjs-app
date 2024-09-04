@@ -1,0 +1,28 @@
+name: Tag Release
+on:
+  pull_request:
+    branches:
+    - "main"
+    types:
+    - closed
+jobs:
+  generate_release:
+    name: Release
+    if: contains(github.event.pull_request.head.ref, 'release/v') && github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+        
+      - name: Fetch version
+        run: |
+          VERSION=$(echo "${GITHUB_HEAD_REF}" | sed "s/release\\/v//")
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+        id: fetch-version
+        
+      - name: Generate release notes
+        uses: softprops/action-gh-release@v1
+        with:
+          token: "your github access token"
+          tag_name: v${{ steps.fetch-version.outputs.version }}
+          generate_release_notes: true
