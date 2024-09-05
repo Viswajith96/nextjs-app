@@ -1,5 +1,6 @@
 name: next-js-docker-build-deployment 
-
+permissions:  
+  issues: write
 on:
   push:
     branches:
@@ -56,6 +57,8 @@ jobs:
         with:
           secret: ${{ github.TOKEN }}
           approvers: Viswajith96
+          minimum-approvals: 1
+          issue-title: "Deploying v1.3.5 to prod from staging"
       - name: Deploy to production
         run: echo deploying
 
