@@ -23,29 +23,29 @@ jobs:
       - name: SCM Checkout 
         uses: actions/checkout@v3
       
-      - name: Configure AWS Credentials for ECR
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+      # - name: Configure AWS Credentials for ECR
+      #   uses: aws-actions/configure-aws-credentials@v1
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     aws-region: ${{ secrets.AWS_REGION }}
       
-      - name: Amazon ECR Authentication
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+      # - name: Amazon ECR Authentication
+      #   id: login-ecr
+      #   uses: aws-actions/amazon-ecr-login@v1
 
 # Build docker image
       - name: Get Image Tag
         run: |
           echo "BUILD_NUMBER=$(echo ${{ github.run_number }})" >> $GITHUB_ENV
 
-      - name: Build Docker image
-        env:
-          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-        run: |
-          docker build -t $ECR_REPOSITORY:$BUILD_NUMBER \
-            --build-arg BUILD_NUMBER="$BUILD_NUMBER" \
-            -f Dockerfile .  
+      # - name: Build Docker image
+      #   env:
+      #     ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+      #   run: |
+      #     docker build -t $ECR_REPOSITORY:$BUILD_NUMBER \
+      #       --build-arg BUILD_NUMBER="$BUILD_NUMBER" \
+      #       -f Dockerfile .  
 
 # Run docker image vulnerability scan
       - name: Run Trivy vulnerability scanner
@@ -60,7 +60,7 @@ jobs:
           output: 'trivy-results.sarif'
 
 # Upload trivy scan results
-      - name: Upload Trivy Scan Results
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: 'trivy-results.sarif'
+      # - name: Upload Trivy Scan Results
+      #   uses: github/codeql-action/upload-sarif@v2
+      #   with:
+      #     sarif_file: 'trivy-results.sarif'
