@@ -45,6 +45,7 @@ jobs:
     name: deploy to stage
     runs-on: ubuntu-latest
     needs: build
+    environment: staging
     steps:
       - name: Deploy to stage
         run: echo deploying
@@ -52,6 +53,7 @@ jobs:
     name: deploy to prod
     runs-on: ubuntu-latest
     needs: build
+    environment: production
     steps:
       - uses: trstringer/manual-approval@v1
         with:
